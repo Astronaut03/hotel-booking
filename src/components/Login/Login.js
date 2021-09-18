@@ -1,4 +1,8 @@
-import * as firebase from "firebase/app";
+//import * as firebase from "firebase/app";
+//import firebase from 'firebase';
+
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 import React, { useContext } from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import firebaseConfig from './firebase.config';
@@ -23,7 +27,7 @@ const Login = () => {
         const {displayName, email} = result.user;
         const signedInUser ={name: displayName, email}
         setLoggedInUser(signedInUser);
-        history.replace(from);
+        storeAuthToken();
     })
         .catch((error) => {
         // Handle Errors here.
@@ -35,7 +39,19 @@ const Login = () => {
         // const credential = GoogleAuthProvider.credentialFromError(error);
         console.log(errorCode, errorMessage);
     });
-        }
+    }
+
+    const storeAuthToken =() => {
+        firebase.auth().currentUser.getIdToken(/* forceRefresh */ true)
+        .then(function(idToken) {
+            // Send token to your backend via HTTPS
+            sessionStorage.setItem('token', idToken);
+            history.replace(from);
+          }).catch(function(error) {
+            // Handle error
+          }); 
+    }
+
     return (
         <div>
             <h1>this is login</h1>
